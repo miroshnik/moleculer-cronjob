@@ -41,5 +41,3 @@ The project is available under the [MIT license](https://tldrlegal.com/license/m
 
 # Contact
 Copyright (c) 2019 Aleksandr Miroshnik
-
-[![@icebob](https://img.shields.io/badge/github-moleculerjs-green.svg)](https://github.com/moleculerjs) [![@icebob](https://img.shields.io/badge/twitter-Icebobcsi-blue.svg)](https://twitter.com/Icebobcsi)
