@@ -1,28 +1,83 @@
-"use strict";
+const cron = require('cron')
 
-const { ServiceBroker } = require("moleculer");
-const MyService = require("../../src");
+const { ServiceBroker } = require('moleculer')
+const CronJobMixin = require('../../src')
 
-describe("Test MyService", () => {
-	const broker = new ServiceBroker();
-	const service = broker.createService(MyService);
+describe('Test CronJob service', () => {
+  const broker = new ServiceBroker({ logger: false })
 
-	beforeAll(() => broker.start());
-	afterAll(() => broker.stop());
+  const onTick = jest.fn()
+  const onComplete = jest.fn()
 
-	it("should be created", () => {
-		expect(service).toBeDefined();
-	});
+  const serviceSchema = {
+    settings: {
+      cronTime: '* */5 * * *',
+      runOnInit: true
+    },
+    mixins: [CronJobMixin],
+    methods: {
+      onTick,
+      onComplete
+    }
+  }
 
-	it("should return with 'Hello Anonymous'", () => {
-		return broker.call("cronjob.test").then(res => {
-			expect(res).toBe("Hello Anonymous");
-		});
-	});
+  afterEach(async () => {
+    onTick.mockClear()
+    onComplete.mockClear()
+  })
 
-	it("should return with 'Hello John'", () => {
-		return broker.call("cronjob.test", { name: "John" }).then(res => {
-			expect(res).toBe("Hello John");
-		});
-	});
-});
+  const service = broker.createService(serviceSchema)
+
+  it('should be created', async () => {
+    await broker.start()
+    expect(service).toBeDefined()
+    await broker.stop()
+  })
+
+  it('should have settings.start to be true', async () => {
+    await broker.start()
+    expect(service.settings.start).toBe(true)
+    await broker.stop()
+  })
+
+  it('should have $cronjob initialised', async () => {
+    await broker.start()
+    expect(service.$cronjob).toBeInstanceOf(cron.CronJob)
+    await broker.stop()
+  })
+
+  it('should have $cronjob to be running', async () => {
+    await broker.start()
+    expect(service.$cronjob.running).toBe(true)
+    await broker.stop()
+  })
+
+  it('should have onTick to be invoked on start', async () => {
+    await broker.start()
+    await broker.stop()
+    expect(onTick).toHaveBeenCalledTimes(1)
+  })
+
+  it('should have onComplete to be invoked', async () => {
+    await broker.start()
+    await broker.stop()
+    expect(onComplete).toHaveBeenCalledTimes(1)
+  })
+
+  it('should have $cronjob.stop to be invoked if cronjob is running', async () => {
+    await broker.start()
+    service.$cronjob.stop()
+    service.$cronjob.running = true
+    service.$cronjob.stop = jest.fn()
+    await broker.stop()
+    expect(service.$cronjob.stop).toHaveBeenCalledTimes(1)
+  })
+
+  it('should have $cronjob.stop to be not invoked if cronjob is not running', async () => {
+    await broker.start()
+    service.$cronjob.stop()
+    service.$cronjob.stop = jest.fn()
+    await broker.stop()
+    expect(service.$cronjob.stop).toHaveBeenCalledTimes(0)
+  })
+})
