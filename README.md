@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/miroshnik/moleculer-cronjob.svg?branch=master)](https://travis-ci.org/miroshnik/moleculer-cronjob)
 [![Coverage Status](https://coveralls.io/repos/github/miroshnik/moleculer-cronjob/badge.svg?branch=master)](https://coveralls.io/github/miroshnik/moleculer-cronjob?branch=master)
-[![Codacy Badge](https://api.codacy.com/project/badge/Grade/<----hash----->)](https://www.codacy.com/app/<---username---->/moleculer-cronjob?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=miroshnik/moleculer-cronjob&amp;utm_campaign=Badge_Grade)
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/07f31537d4694cdc8226bc8427d139c0)](https://www.codacy.com/app/miroshnik/moleculer-cronjob?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=miroshnik/moleculer-cronjob&amp;utm_campaign=Badge_Grade)
 [![Code Climate](https://codeclimate.com/github/miroshnik/moleculer-cronjob/badges/gpa.svg)](https://codeclimate.com/github/miroshnik/moleculer-cronjob)
 [![David](https://img.shields.io/david/miroshnik/moleculer-cronjob.svg)](https://david-dm.org/miroshnik/moleculer-cronjob)
 [![Known Vulnerabilities](https://snyk.io/test/github/miroshnik/moleculer-cronjob/badge.svg)](https://snyk.io/test/github/miroshnik/moleculer-cronjob)
