@@ -2,9 +2,7 @@ const { ServiceBroker } = require('moleculer')
 const CronJob = require('../../index')
 
 // Create broker
-const broker = new ServiceBroker({
-  logger: console
-})
+const broker = new ServiceBroker()
 
 // Create my conjob service
 broker.createService({
@@ -18,8 +16,7 @@ broker.createService({
   },
 
   metadata: {
-    ticksCount: 0,
-    startDate: new Date()
+    ticksCount: 0
   },
 
   methods: {
@@ -32,7 +29,7 @@ broker.createService({
     },
 
     onComplete () {
-      this.logger.info('Complete.')
+      this.logger.info('Complete')
     }
   }
 })

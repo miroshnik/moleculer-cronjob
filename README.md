@@ -8,21 +8,93 @@
 [![Known Vulnerabilities](https://snyk.io/test/github/miroshnik/moleculer-cronjob/badge.svg)](https://snyk.io/test/github/miroshnik/moleculer-cronjob)
 [![Join the chat at https://gitter.im/moleculerjs/moleculer](https://badges.gitter.im/moleculerjs/moleculer.svg)](https://gitter.im/moleculerjs/moleculer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-# moleculer-cronjob [![NPM version](https://img.shields.io/npm/v/moleculer-cronjob.svg)](https://www.npmjs.com/package/moleculer-cronjob)
-
-
-
-## Features
+# The `moleculer-cron` is the [cron](https://www.npmjs.com/package/cron) based scheduler service for [Moleculer](https://github.com/moleculerjs/moleculer) framework [![NPM version](https://img.shields.io/npm/v/moleculer-cronjob.svg)](https://www.npmjs.com/package/moleculer-cronjob)
 
 ## Install
+
 ```
 npm install moleculer-cronjob --save
 ```
 
 ## Usage
 
+```javascript
+const { ServiceBroker } = require('moleculer')
+const CronJob = require('../../index')
 
-# Test
+// Create broker
+const broker = new ServiceBroker()
+
+// Create my conjob service
+broker.createService({
+  name: 'my.cronjob',
+
+  mixins: [CronJob],
+
+  settings: {
+    cronTime: '* * * * * *',
+  },
+
+  methods: {
+    onTick () {
+      this.logger.info(`Tick`)
+    }
+  }
+})
+
+// Start broker
+broker.start().catch(error => console.log(error))
+
+```
+
+The service uses settings as the `cron.СronJob` constructor parameters, except for `onTick` and `onComplete`, for which the `onTick` and `onComplete` methods are used respectively.  
+The object returned by the `cron.СronJob` constructor is stored in `this.$cronjob` property, accessible everywhere within the service's context.  
+Cronjob stops automatically when the service is stopped, but can also be stopped manually.  
+
+типа того
+```javascript
+const { ServiceBroker } = require('moleculer')
+const CronJob = require('../../index')
+
+// Create broker
+const broker = new ServiceBroker()
+
+// Create my conjob service
+broker.createService({
+  name: 'my.cronjob',
+
+  mixins: [CronJob],
+
+  settings: {
+    cronTime: '*/3 * * * * *',
+    runOnInit: true
+  },
+
+  metadata: {
+    ticksCount: 0
+  },
+
+  methods: {
+    onTick () {
+      this.logger.info(`Tick #${++this.metadata.ticksCount}`)
+
+      if (this.metadata.ticksCount === 5) {
+        this.$cronjob.stop()
+      }
+    },
+
+    onComplete () {
+      this.logger.info('Complete')
+    }
+  }
+})
+
+// Start broker
+broker.start().catch(error => console.log(error))
+``` 
+
+## Test
+
 ```
 $ npm test
 ```
@@ -33,11 +105,15 @@ In development with watching
 $ npm run ci
 ```
 
-# Contribution
+## Contribution
+
 Please send pull requests improving the usage and fixing bugs, improving documentation and providing better examples, or providing some testing, because these things are important.
 
-# License
+## License
+
 The project is available under the [MIT license](https://tldrlegal.com/license/mit-license).
 
-# Contact
-Copyright (c) 2019 Aleksandr Miroshnik
+## Contact
+
+Copyright (c) 2019 Aleksandr Miroshnik  
+[miroshnik@gmail.com](mailto:miroshnik@gmail.com)

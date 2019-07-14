@@ -34,15 +34,12 @@ module.exports = {
    * Service started lifecycle event handler
    */
   started () {
-    this.$cronjob = new cron.CronJob(
-      Object.assign(this.settings,
-        {
-          context: this,
-          onTick: onComplete => setImmediate(() => this.onTick(onComplete)),
-          onComplete: this.onComplete
-        }
-      )
-    )
+    this.$cronjob = new cron.CronJob({
+      ...this.settings,
+      context: this,
+      onTick: onComplete => setImmediate(() => this.onTick(onComplete)),
+      onComplete: this.onComplete
+    })
   },
 
   /**
