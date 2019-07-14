@@ -8,7 +8,7 @@
 [![Known Vulnerabilities](https://snyk.io/test/github/miroshnik/moleculer-cronjob/badge.svg)](https://snyk.io/test/github/miroshnik/moleculer-cronjob)
 [![Join the chat at https://gitter.im/moleculerjs/moleculer](https://badges.gitter.im/moleculerjs/moleculer.svg)](https://gitter.im/moleculerjs/moleculer?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-# The `moleculer-cron` is the [cron](https://www.npmjs.com/package/cron) based scheduler service for [Moleculer](https://github.com/moleculerjs/moleculer) framework [![NPM version](https://img.shields.io/npm/v/moleculer-cronjob.svg)](https://www.npmjs.com/package/moleculer-cronjob)
+## The `moleculer-cron` is the [cron](https://www.npmjs.com/package/cron) based scheduler service for [Moleculer](https://github.com/moleculerjs/moleculer) framework [![NPM version](https://img.shields.io/npm/v/moleculer-cronjob.svg)](https://www.npmjs.com/package/moleculer-cronjob)
 
 ## Install
 
@@ -51,7 +51,6 @@ The service uses settings as the `cron.СronJob` constructor parameters, except 
 The object returned by the `cron.СronJob` constructor is stored in `this.$cronjob` property, accessible everywhere within the service's context.  
 Cronjob stops automatically when the service is stopped, but can also be stopped manually.  
 
-типа того
 ```javascript
 const { ServiceBroker } = require('moleculer')
 const CronJob = require('../../index')
