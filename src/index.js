@@ -46,7 +46,7 @@ module.exports = {
    * Service stopped lifecycle event handler
    */
   stopped () {
-    if (this.$cronjob.running) {
+    if (this.$cronjob && this.$cronjob.running) {
       this.$cronjob.stop()
     }
   }
