@@ -11,8 +11,9 @@ broker.createService({
   mixins: [CronJob],
 
   settings: {
-    cronTime: '*/3 * * * * *',
-    runOnInit: true
+    cronTime: '*/3 * * * * *', // every 3rd second
+    runOnInit: true,
+    withoutOverlapping: false
   },
 
   metadata: {
@@ -20,12 +21,17 @@ broker.createService({
   },
 
   methods: {
-    onTick () {
-      this.logger.info(`Tick #${++this.metadata.ticksCount}`)
+    async onTick () {
+      this.metadata.ticksCount++
+
+      this.logger.info(`Tick #${this.metadata.ticksCount}, parallelJobsCount ${this.$parallelJobsCount}`)
 
       if (this.metadata.ticksCount === 5) {
-        this.$cronjob.stop()
+        this.$cronjob.running && this.$cronjob.stop()
       }
+
+      // sleep for 5 seconds
+      await new Promise(resolve => setTimeout(resolve, 5000))
     },
 
     onComplete () {

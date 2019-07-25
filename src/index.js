@@ -14,7 +14,8 @@ module.exports = {
    * Default settings
    */
   settings: {
-    start: true
+    start: true,
+    withoutOverlapping: false
   },
 
   /**
@@ -22,12 +23,19 @@ module.exports = {
    */
   methods: {
     onTick () {
-
+      //
     },
 
     onComplete () {
-
+      //
     }
+  },
+
+  /**
+   * Service created lifecycle event handler
+   */
+  created () {
+    this.$parallelJobsCount = 0
   },
 
   /**
@@ -37,7 +45,13 @@ module.exports = {
     this.$cronjob = new cron.CronJob({
       ...this.settings,
       context: this,
-      onTick: onComplete => setImmediate(() => this.onTick(onComplete)),
+      onTick: onComplete => setImmediate(async () => {
+        this.$parallelJobsCount++
+        if (!this.settings.withoutOverlapping || this.$parallelJobsCount === 1) {
+          await this.onTick(onComplete)
+        }
+        this.$parallelJobsCount--
+      }),
       onComplete: this.onComplete
     })
   },
@@ -45,9 +59,13 @@ module.exports = {
   /**
    * Service stopped lifecycle event handler
    */
-  stopped () {
+  async stopped () {
     if (this.$cronjob && this.$cronjob.running) {
       this.$cronjob.stop()
+
+      for (; this.$parallelJobsCount > 0;) {
+        await new Promise(resolve => setTimeout(resolve, 1000))
+      }
     }
   }
 }
