@@ -58,7 +58,7 @@ describe('Test CronJob Mixin', () => {
   describe(
     'Test \'started\' method',
     () => {
-      it ('should be ok with single job', async () => {
+      it('should be ok with single job', async () => {
         const context = {
           ...CronJobMixin,
           onComplete: jest.fn(),
@@ -87,7 +87,7 @@ describe('Test CronJob Mixin', () => {
         expect(context.onTick.mock.calls[0][0]).toBe(onCompleteMock)
       })
 
-      it ('should be ok without overlapping', async () => {
+      it('should be ok without overlapping', async () => {
         const context = {
           ...CronJobMixin,
           onComplete: jest.fn(),
@@ -111,7 +111,7 @@ describe('Test CronJob Mixin', () => {
 
         const onCompleteMock = Math.random()
         onTickWrapper(onCompleteMock)
-        expect(setImmediate).toHaveBeenCalledTimes(1);
+        expect(setImmediate).toHaveBeenCalledTimes(1)
 
         const onTickFunc = setImmediate.mock.calls[0][0]
         await onTickFunc()
@@ -120,7 +120,7 @@ describe('Test CronJob Mixin', () => {
         expect(context.onTick.mock.calls[0][0]).toBe(onCompleteMock)
       })
 
-      it ('should be ok without overlapping and with several jobs', async () => {
+      it('should be ok without overlapping and with several jobs', async () => {
         const parallelJobsCount = 2 + Math.ceil(Math.random() * 10000)
         const context = {
           ...CronJobMixin,
