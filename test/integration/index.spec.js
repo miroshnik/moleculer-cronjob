@@ -40,6 +40,8 @@ describe('Test CronJob service', () => {
     await broker.stop()
 
     expect(service.$cronjob.running).toBe(false)
+    expect(service.$parallelJobsCount).toBe(0)
+
     expect(onTick).toHaveBeenCalledTimes(1)
     expect(onComplete).toHaveBeenCalledTimes(1)
   })
@@ -50,6 +52,10 @@ describe('Test CronJob service', () => {
     service.$cronjob.stop()
     service.$cronjob.running = true
     await broker.stop()
+
+    expect(service.$cronjob.running).toBe(false)
+    expect(service.$parallelJobsCount).toBe(0)
+
     expect(spy).toHaveBeenCalledTimes(2)
     spy.mockRestore()
   })
@@ -62,6 +68,10 @@ describe('Test CronJob service', () => {
     service.$cronjob.stop = jest.fn()
     */
     await broker.stop()
+
+    expect(service.$cronjob.running).toBe(false)
+    expect(service.$parallelJobsCount).toBe(0)
+
     expect(spy).toHaveBeenCalledTimes(1)
     spy.mockRestore()
   })
