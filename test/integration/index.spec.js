@@ -25,8 +25,6 @@ describe('Test CronJob service', () => {
     onTick.mockClear()
     onComplete.mockClear()
   })
-
-
   afterAll(async () => jest.clearAllMocks())
 
   const service = broker.createService(serviceSchema)

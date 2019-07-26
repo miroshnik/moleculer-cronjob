@@ -13,7 +13,6 @@ describe('Test CronJob Mixin', () => {
   describe(
     'Test \'stopped\' method',
     () => {
-
       it('should be ok', async () => {
         const result = await CronJobMixin.stopped()
         return expect(result).toEqual(undefined)
@@ -53,7 +52,6 @@ describe('Test CronJob Mixin', () => {
 
         return expect(result).toEqual(undefined)
       })
-
     }
   )
 
@@ -147,7 +145,7 @@ describe('Test CronJob Mixin', () => {
 
         const onCompleteMock = Math.random()
         onTickWrapper(onCompleteMock)
-        expect(setImmediate).toHaveBeenCalledTimes(1);
+        expect(setImmediate).toHaveBeenCalledTimes(1)
 
         const onTickFunc = setImmediate.mock.calls[0][0]
         await onTickFunc()
