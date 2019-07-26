@@ -26,58 +26,45 @@ describe('Test CronJob service', () => {
     onComplete.mockClear()
   })
 
+
+  afterAll(async () => jest.clearAllMocks())
+
   const service = broker.createService(serviceSchema)
 
-  it('should be created', async () => {
+  it('should be ok', async () => {
     await broker.start()
+
     expect(service).toBeDefined()
-    await broker.stop()
-  })
-
-  it('should have settings.start to be true', async () => {
-    await broker.start()
     expect(service.settings.start).toBe(true)
-    await broker.stop()
-  })
-
-  it('should have $cronjob initialised', async () => {
-    await broker.start()
     expect(service.$cronjob).toBeInstanceOf(cron.CronJob)
-    await broker.stop()
-  })
-
-  it('should have $cronjob to be running', async () => {
-    await broker.start()
     expect(service.$cronjob.running).toBe(true)
-    await broker.stop()
-  })
 
-  it('should have onTick to be invoked on start', async () => {
-    await broker.start()
     await broker.stop()
+
+    expect(service.$cronjob.running).toBe(false)
     expect(onTick).toHaveBeenCalledTimes(1)
-  })
-
-  it('should have onComplete to be invoked', async () => {
-    await broker.start()
-    await broker.stop()
     expect(onComplete).toHaveBeenCalledTimes(1)
   })
 
   it('should have $cronjob.stop to be invoked if cronjob is running', async () => {
     await broker.start()
+    const spy = jest.spyOn(service.$cronjob, 'stop')
     service.$cronjob.stop()
     service.$cronjob.running = true
-    service.$cronjob.stop = jest.fn()
     await broker.stop()
-    expect(service.$cronjob.stop).toHaveBeenCalledTimes(1)
+    expect(spy).toHaveBeenCalledTimes(2)
+    spy.mockRestore()
   })
 
   it('should have $cronjob.stop to be not invoked if cronjob is not running', async () => {
     await broker.start()
+    const spy = jest.spyOn(service.$cronjob, 'stop')
     service.$cronjob.stop()
+    /*
     service.$cronjob.stop = jest.fn()
+    */
     await broker.stop()
-    expect(service.$cronjob.stop).toHaveBeenCalledTimes(0)
+    expect(spy).toHaveBeenCalledTimes(1)
+    spy.mockRestore()
   })
 })
