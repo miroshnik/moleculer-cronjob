@@ -47,7 +47,10 @@ module.exports = {
       context: this,
       onTick: onComplete => setImmediate(async () => {
         this.$parallelJobsCount++
-        if (!this.settings.withoutOverlapping || this.$parallelJobsCount === 1) {
+        if (
+          !this.settings.withoutOverlapping ||
+          (this.settings.withoutOverlapping && this.$parallelJobsCount === 1)
+        ) {
           await this.onTick(onComplete)
         }
         this.$parallelJobsCount--
