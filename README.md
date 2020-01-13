@@ -6,7 +6,7 @@
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/07f31537d4694cdc8226bc8427d139c0)](https://www.codacy.com/app/miroshnik/moleculer-cronjob?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=miroshnik/moleculer-cronjob&amp;utm_campaign=Badge_Grade)
 [![Code Climate](https://codeclimate.com/github/miroshnik/moleculer-cronjob/badges/gpa.svg)](https://codeclimate.com/github/miroshnik/moleculer-cronjob)
 [![David](https://img.shields.io/david/miroshnik/moleculer-cronjob.svg)](https://david-dm.org/miroshnik/moleculer-cronjob)
-[![Known Vulnerabilities](https://snyk.io/test/github/miroshnik/moleculer-cronjob/badge.svg)](https://snyk.io/test/github/miroshnik/moleculer-cronjob) [![Greenkeeper badge](https://badges.greenkeeper.io/miroshnik/moleculer-cronjob.svg)](https://greenkeeper.io/)
+[![Known Vulnerabilities](https://snyk.io/test/github/miroshnik/moleculer-cronjob/badge.svg)](https://snyk.io/test/github/miroshnik/moleculer-cronjob)
 
 ## The `moleculer-cron` is the [cron](https://www.npmjs.com/package/cron) based scheduler service for [Moleculer](https://github.com/moleculerjs/moleculer)
 
