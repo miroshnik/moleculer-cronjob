@@ -78,7 +78,7 @@ describe('Test CronJob Mixin', () => {
 
         const onCompleteMock = Math.random()
         onTickWrapper(onCompleteMock)
-        expect(setImmediate).toHaveBeenCalledTimes(1);
+        expect(setImmediate).toHaveBeenCalledTimes(1)
 
         const onTickFunc = setImmediate.mock.calls[0][0]
         await onTickFunc()
