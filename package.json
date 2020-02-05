@@ -1,6 +1,6 @@
 {
   "name": "moleculer-cronjob",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "CronJob service for Moleculer framework",
   "main": "index.js",
   "scripts": {
