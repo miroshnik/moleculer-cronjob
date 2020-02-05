@@ -63,8 +63,7 @@ describe('Test CronJob service', () => {
             await broker.destroyService(service)
             await broker.stop()
             resolve()
-          }
-          catch (err) {
+          } catch (err) {
             await broker.destroyService(service)
             await broker.stop()
             reject(err)
