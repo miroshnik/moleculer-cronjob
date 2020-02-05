@@ -1,83 +1,169 @@
+jest.mock('cron')
 const cron = require('cron')
-
-const { ServiceBroker } = require('moleculer')
 const CronJobMixin = require('../../src')
 
-describe('Test CronJob service', () => {
-  const broker = new ServiceBroker({ logger: false })
+beforeEach(() => jest.useFakeTimers())
 
-  const onTick = jest.fn()
-  const onComplete = jest.fn()
+afterEach(() => {
+  jest.clearAllTimers()
+  cron.CronJob.mockClear()
+})
 
-  const serviceSchema = {
-    settings: {
-      cronTime: '* */5 * * *',
-      runOnInit: true
-    },
-    mixins: [CronJobMixin],
-    methods: {
-      onTick,
-      onComplete
+describe('Test CronJob Mixin', () => {
+  describe(
+    'Test \'stopped\' method',
+    () => {
+      it('should be ok', async () => {
+        const result = await CronJobMixin.stopped()
+        return expect(result).toEqual(undefined)
+      })
+
+      it('should be ok with empty $cronjob', async () => {
+        const context = {
+          $cronjob: null
+        }
+
+        const result = await CronJobMixin.stopped.call({ ...CronJobMixin, ...context })
+        return expect(result).toEqual(undefined)
+      })
+
+      it('should be ok with not running', async () => {
+        const context = {
+          $cronjob: { running: false, $parallelJobsCount: 0 }
+        }
+
+        const result = await CronJobMixin.stopped.call({ ...CronJobMixin, ...context })
+        return expect(result).toEqual(undefined)
+      })
+
+      it('should invoke stop', async () => {
+        const context = {
+          $cronjob: {
+            running: true,
+            stop: jest.fn(),
+            $parallelJobsCount: 0
+          }
+        }
+
+        const result = await CronJobMixin.stopped.call({ ...CronJobMixin, ...context })
+
+        expect(context.$cronjob.stop.mock.calls.length).toBe(1)
+        expect(context.$cronjob.stop.mock.calls[0][0]).toBe(undefined)
+
+        return expect(result).toEqual(undefined)
+      })
     }
-  }
+  )
 
-  afterEach(async () => {
-    onTick.mockClear()
-    onComplete.mockClear()
-  })
+  describe(
+    'Test \'started\' method',
+    () => {
+      it('should be ok with single job', async () => {
+        const context = {
+          ...CronJobMixin,
+          onComplete: jest.fn(),
+          onTick: jest.fn(),
+          $parallelJobsCount: 0
+        }
+        const result = CronJobMixin.started.call(context)
 
-  const service = broker.createService(serviceSchema)
+        expect(cron.CronJob.mock.calls.length).toBe(1)
+        expect(cron.CronJob.mock.calls[0][0].start).toBe(true)
+        expect(cron.CronJob.mock.calls[0][0].withoutOverlapping).toBe(false)
+        expect(cron.CronJob.mock.calls[0][0].context).toBe(context)
+        expect(cron.CronJob.mock.calls[0][0].onComplete).toBe(context.onComplete)
+        expect(result).toEqual(undefined)
 
-  it('should be created', async () => {
-    await broker.start()
-    expect(service).toBeDefined()
-    await broker.stop()
-  })
+        const onTickWrapper = cron.CronJob.mock.calls[0][0].onTick
 
-  it('should have settings.start to be true', async () => {
-    await broker.start()
-    expect(service.settings.start).toBe(true)
-    await broker.stop()
-  })
+        const onCompleteMock = Math.random()
+        onTickWrapper(onCompleteMock)
+        expect(setImmediate).toHaveBeenCalledTimes(1)
 
-  it('should have $cronjob initialised', async () => {
-    await broker.start()
-    expect(service.$cronjob).toBeInstanceOf(cron.CronJob)
-    await broker.stop()
-  })
+        const onTickFunc = setImmediate.mock.calls[0][0]
+        await onTickFunc()
+        expect(context.$parallelJobsCount).toBe(0)
+        expect(context.onTick.mock.calls.length).toBe(1)
+        expect(context.onTick.mock.calls[0][0]).toBe(onCompleteMock)
+      })
 
-  it('should have $cronjob to be running', async () => {
-    await broker.start()
-    expect(service.$cronjob.running).toBe(true)
-    await broker.stop()
-  })
+      it('should be ok without overlapping', async () => {
+        const context = {
+          ...CronJobMixin,
+          onComplete: jest.fn(),
+          onTick: jest.fn(),
+          $parallelJobsCount: 0,
+          settings: {
+            start: true,
+            withoutOverlapping: true
+          }
+        }
+        const result = CronJobMixin.started.call(context)
 
-  it('should have onTick to be invoked on start', async () => {
-    await broker.start()
-    await broker.stop()
-    expect(onTick).toHaveBeenCalledTimes(1)
-  })
+        expect(cron.CronJob.mock.calls.length).toBe(1)
+        expect(cron.CronJob.mock.calls[0][0].start).toBe(true)
+        expect(cron.CronJob.mock.calls[0][0].withoutOverlapping).toBe(true)
+        expect(cron.CronJob.mock.calls[0][0].context).toBe(context)
+        expect(cron.CronJob.mock.calls[0][0].onComplete).toBe(context.onComplete)
+        expect(result).toEqual(undefined)
 
-  it('should have onComplete to be invoked', async () => {
-    await broker.start()
-    await broker.stop()
-    expect(onComplete).toHaveBeenCalledTimes(1)
-  })
+        const onTickWrapper = cron.CronJob.mock.calls[0][0].onTick
 
-  it('should have $cronjob.stop to be invoked if cronjob is running', async () => {
-    await broker.start()
-    service.$cronjob.stop()
-    service.$cronjob.running = true
-    service.$cronjob.stop = jest.fn()
-    await broker.stop()
-    expect(service.$cronjob.stop).toHaveBeenCalledTimes(1)
-  })
+        const onCompleteMock = Math.random()
+        onTickWrapper(onCompleteMock)
+        expect(setImmediate).toHaveBeenCalledTimes(1)
 
-  it('should have $cronjob.stop to be not invoked if cronjob is not running', async () => {
-    await broker.start()
-    service.$cronjob.stop()
-    service.$cronjob.stop = jest.fn()
-    await broker.stop()
-    expect(service.$cronjob.stop).toHaveBeenCalledTimes(0)
-  })
+        const onTickFunc = setImmediate.mock.calls[0][0]
+        await onTickFunc()
+        expect(context.$parallelJobsCount).toBe(0)
+        expect(context.onTick.mock.calls.length).toBe(1)
+        expect(context.onTick.mock.calls[0][0]).toBe(onCompleteMock)
+      })
+
+      it('should be ok without overlapping and with several jobs', async () => {
+        const parallelJobsCount = 2 + Math.ceil(Math.random() * 10000)
+        const context = {
+          ...CronJobMixin,
+          onComplete: jest.fn(),
+          onTick: jest.fn(),
+          $parallelJobsCount: parallelJobsCount,
+          settings: {
+            start: true,
+            withoutOverlapping: true
+          }
+        }
+        const result = CronJobMixin.started.call(context)
+
+        expect(cron.CronJob.mock.calls.length).toBe(1)
+        expect(cron.CronJob.mock.calls[0][0].start).toBe(true)
+        expect(cron.CronJob.mock.calls[0][0].withoutOverlapping).toBe(true)
+        expect(cron.CronJob.mock.calls[0][0].context).toBe(context)
+        expect(cron.CronJob.mock.calls[0][0].onComplete).toBe(context.onComplete)
+        expect(result).toEqual(undefined)
+
+        const onTickWrapper = cron.CronJob.mock.calls[0][0].onTick
+
+        const onCompleteMock = Math.random()
+        onTickWrapper(onCompleteMock)
+        expect(setImmediate).toHaveBeenCalledTimes(1)
+
+        const onTickFunc = setImmediate.mock.calls[0][0]
+        await onTickFunc()
+        expect(context.$parallelJobsCount).toBe(parallelJobsCount)
+        expect(context.onTick.mock.calls.length).toBe(0)
+      })
+    }
+  )
+
+  describe(
+    'Test \'created\' method',
+    () => {
+      it('should be ok', () => {
+        const context = { $parallelJobsCount: Math.random() }
+        const result = CronJobMixin.created.call(context)
+        expect(context.$parallelJobsCount).toBe(0)
+        return expect(result).toEqual(undefined)
+      })
+    }
+  )
 })
