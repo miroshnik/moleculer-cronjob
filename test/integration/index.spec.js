@@ -129,13 +129,13 @@ describe('Test CronJob service', () => {
     await broker.destroyService(service)
   })
 
-  it('should onTick be invoked on fire', async () => {
-    const service = broker.createService(serviceSchema)
-    await broker.start()
-    await broker.stop()
+//   it('should onTick be invoked on fire', async () => {
+//     const service = broker.createService(serviceSchema)
+//     await broker.start()
+//     await broker.stop()
 
-    expect(onTick).toHaveBeenCalledTimes(1)
+//     expect(onTick).toHaveBeenCalledTimes(1)
 
-    await broker.destroyService(service)
-  })
+//     await broker.destroyService(service)
+//   })
 })
